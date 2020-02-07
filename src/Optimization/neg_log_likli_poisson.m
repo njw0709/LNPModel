@@ -17,11 +17,11 @@ function [neg_log_likelihood, dL] = neg_log_likli_poisson(stim, spike_train, glm
     for i=1:size(stim,1)
         log_likelihood = log_likelihood + spike_train(i).*log(td*exp(stim(i,:)*weight)) ...
             - td*exp(stim(i,:)*weight) - log(factorial(spike_train(i)));
-        grad_stim(i,:) = spike_train(i)*(1/(td*exp(stim(i,:)*weight))-1)...
-                *td*exp(stim(i,:)*weight).*stim(i,:);
+        grad_stim(i,:) = (spike_train(i) - td*exp(stim(i,:)*weight)).*stim(i,:);
     end
     neg_log_likelihood = -log_likelihood;
-    
+    negLL = sprintf('Neg Log Likelihood: %0.3f', neg_log_likelihood);
+    disp(negLL);
     %% compute gradient w.r.t each weights (theta) for fmin solver
     if isequal(how, 'nonseparable')
         dwdth = eye(length(weights));
@@ -29,7 +29,9 @@ function [neg_log_likelihood, dL] = neg_log_likli_poisson(stim, spike_train, glm
         dwdth = compute_dwdth_separable(glm_weights, temporal_rf, spatial_rf);
     end
     dL = grad_stim*dwdth;
-    dL = sum(dL,1)';
+    dL = -sum(dL,1)';
+    grad_norm = sprintf('gradient norm length: %0.3f', norm(dL));
+    disp(grad_norm);
 end
 
 
