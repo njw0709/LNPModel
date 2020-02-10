@@ -6,9 +6,9 @@ function plot_sta(sta_3d_mat, rf_temporal_len, time_step)
     ts_max = time_step*rf_temporal_len;
     sta_3d_mat = sta_3d_mat./max(max(max(abs(sta_3d_mat))));
     [x_size, y_size, ~] = size(sta_3d_mat);
-    
+    plot_rowsize = floor(sqrt(rf_temporal_len));
     for i = 1:rf_temporal_len
-        subplot(1,rf_temporal_len,i);
+        subplot(plot_rowsize,ceil(rf_temporal_len/plot_rowsize),i);
         data = zeros([x_size + 2, y_size + 2]);
         data(2 : x_size + 1, 2 : y_size + 1) = sta_3d_mat(:,:,i);
         contourf(data, levels,'LineStyle', 'none');
