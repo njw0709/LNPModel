@@ -1,5 +1,4 @@
-function [spike_train, rf_spatial, rf_temporal] = simulate_neuron(Stim)
-    rf_temporal_len = 25;
+function [spike_train, rf_spatial, rf_temporal] = simulate_neuron(Stim, rf_temporal_len)
     spatial_amplitude = 1.6;
     rf_spatial = spatial_amplitude.*center_surround(1.2, [6,7]);
     rf_spatiotemporal = repmat(rf_spatial,[1,1,rf_temporal_len]);
