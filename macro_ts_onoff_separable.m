@@ -14,7 +14,7 @@ data_root_path = 'Z:\LabMembers\Jong\Interneuron_multie\';
 config_root_path = 'SN\processed';
 event_timing_path = 'SN';
 train_data_pct = 0.7;
-save_path = 'Z:\LabMembers\Jong\model_output_ts_separable\';
+save_path = 'Z:\LabMembers\Jong\model_output_ts_onoff_separable\';
 
 defaultprs = {'Gradobj','on', 'maxiter', 1000, 'maxfunevals', 1e9, 'Display', 'iter', 'UseParallel', true};
 opts = optimset(defaultprs{:});
@@ -33,13 +33,24 @@ for i=3:length(interneurons)
         recording_name = recording_name{1};
         save_file_name = fullfile(save_path, [interneurons{i},'_',recording_name,'.mat']);
         try
+            %% Load data
            dataset = create_dataset(clu_name, recording_name, data_path);
            [train_var, train_lab, test_var, test_lab] = dataset.divide_train_test_data(train_data_pct);
+           %% compute initial weights from STA
+           rf_temporal_len = 25;
            sta = (train_var'*train_lab)/sum(train_lab);
            sta = reshape(sta, [16,16,25]);
-           Loss = @(rf_weights) neg_log_likli_poisson(train_var, train_lab, rf_weights, 1/35, 25, 16);
            init_weight = initialize_weight_from_sta(sta, 'separable');
-           [weight_final,neglogli,exitflag] = fminunc(Loss,init_weight,opts);
+           spatial_rf_on = init_weight(rf_temporal_len+1:end);
+           spatial_rf_off = spatial_rf_on;
+           spatial_rf_on(spatial_rf_on<0)=0;
+           spatial_rf_off(spatial_rf_off>0)=0;
+           init_weight_onoff = [init_weight(1:rf_temporal_len); spatial_rf_on; spatial_rf_off];
+           
+           %% Optimize weights
+           Loss = @(rf_weights) neg_log_likli_poisson(train_var, train_lab, rf_weights, 1/35, 25, 16);
+           
+           [weight_final,neglogli,exitflag] = fminunc(Loss,init_weight_onoff,opts);
            if (exitflag == 0)
                fprintf('max # evaluations or iterations exceeded (fminunc)\n');
            end
