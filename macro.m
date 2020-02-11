@@ -24,7 +24,6 @@ for i=3:length(interneurons)
     experiment_name = split(interneurons{i},'_');
     clu_name = experiment_name{2};
     experiment_name = experiment_name{1};
-    save_file_name = fullfile(save_path, [interneurons{i},'.mat']);
     data_path = fullfile(data_root_path, experiment_name);
     config_path = fullfile(data_path, config_root_path);
     
@@ -33,20 +32,16 @@ for i=3:length(interneurons)
         recording_name = config_files(j).name;
         recording_name = split(recording_name,'.');
         recording_name = recording_name{1};
+        save_file_name = fullfile(save_path, [interneurons{i},'_',recording_name,'.mat']);
         try
-            if j==1
-               dataset = create_dataset(clu_name, recording_name, data_path);
-            else
-               dataset2 = create_dataset(clu_name, recording_name, data_path);
-               dataset = dataset.join(dataset2);
-            end            
+           dataset = create_dataset(clu_name, recording_name, data_path);
+           [train_var, train_lab, test_var, test_lab] = dataset.divide_train_test_data(train_data_pct);
+           glm_weight = glmfit(train_var, train_lab, 'poisson','constant', 'on', 'options', opts);
+           save(save_file_name, 'glm_weight', 'train_var', 'train_lab', 'test_var', 'test_lab');
         catch
             disp(['error while running ', experiment_name,' ', recording_name,'_', clu_name]);
         end
     end
-    [train_var, train_lab, test_var, test_lab] = dataset.divide_train_test_data(train_data_pct);
-    glm_weight = glmfit(train_var, train_lab, 'poisson','constant', 'on', 'options', opts);
-    save(save_file_name, 'glm_weight', 'test_var', 'test_lab');
 end
 
 function dataset = create_dataset(clu_name, recording_name, data_path)
