@@ -14,17 +14,15 @@ data_root_path = 'Z:\LabMembers\Jong\Interneuron_multie\';
 config_root_path = 'SN\processed';
 event_timing_path = 'SN';
 train_data_pct = 0.7;
-save_path = 'Z:\LabMembers\Jong\model_output\';
+save_path = 'Z:\LabMembers\Jong\model_output_ts_separable\';
 
-opts=statset('glmfit');
-opts.MaxIter = 5000; 
-opts.UseParallel = true;
+defaultprs = {'Gradobj','on', 'maxiter', 1000, 'maxfunevals', 1e9, 'Display', 'iter', 'UseParallel', true};
+opts = optimset(defaultprs{:});
 
 for i=3:length(interneurons)
     experiment_name = split(interneurons{i},'_');
     clu_name = experiment_name{2};
     experiment_name = experiment_name{1};
-    save_file_name = fullfile(save_path, [interneurons{i},'.mat']);
     data_path = fullfile(data_root_path, experiment_name);
     config_path = fullfile(data_path, config_root_path);
     
@@ -33,20 +31,24 @@ for i=3:length(interneurons)
         recording_name = config_files(j).name;
         recording_name = split(recording_name,'.');
         recording_name = recording_name{1};
+        save_file_name = fullfile(save_path, [interneurons{i},'_',recording_name,'.mat']);
         try
-            if j==1
-               dataset = create_dataset(clu_name, recording_name, data_path);
-            else
-               dataset2 = create_dataset(clu_name, recording_name, data_path);
-               dataset = dataset.join(dataset2);
-            end            
+           dataset = create_dataset(clu_name, recording_name, data_path);
+           [train_var, train_lab, test_var, test_lab] = dataset.divide_train_test_data(train_data_pct);
+           sta = (train_var'*train_lab)/sum(train_lab);
+           sta = reshape(sta, [16,16,25]);
+           Loss = @(rf_weights) neg_log_likli_poisson(train_var, train_lab, rf_weights, stim_ts.tempresolu, rf_temporal_len, configs.config.gridsize);
+           init_weight = initialize_weight_from_sta(sta, 'separable');
+           [weight_final,neglogli,exitflag] = fminunc(Loss,init_weight,opts);
+           if (exitflag == 0)
+               fprintf('max # evaluations or iterations exceeded (fminunc)\n');
+           end
+           save(save_file_name, 'weight_final', 'train_var', 'train_lab', 'test_var', 'test_lab');
         catch
-            disp(['error while running ', experiment_name,' ', recording_name,'_', clu_name]);
+           disp(['error while running ', experiment_name,' ', recording_name,'_', clu_name]);
         end
     end
-    [train_var, train_lab, test_var, test_lab] = dataset.divide_train_test_data(train_data_pct);
-    glm_weight = glmfit(train_var, train_lab, 'poisson','constant', 'on', 'options', opts);
-    save(save_file_name, 'glm_weight', 'test_var', 'test_lab');
+    
 end
 
 function dataset = create_dataset(clu_name, recording_name, data_path)
