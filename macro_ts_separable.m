@@ -13,7 +13,7 @@ interneurons = {
 data_root_path = 'Z:\LabMembers\Jong\Interneuron_multie\';
 config_root_path = 'SN\processed';
 event_timing_path = 'SN';
-train_data_pct = 0.7;
+train_data_pct = 0.75;
 save_path = 'Z:\LabMembers\Jong\model_output_ts_separable\';
 
 defaultprs = {'Gradobj','on', 'maxiter', 1000, 'maxfunevals', 1e9, 'Display', 'iter', 'UseParallel', true};
