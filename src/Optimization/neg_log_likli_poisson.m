@@ -1,4 +1,4 @@
-function [neg_log_likelihood, dL] = neg_log_likli_poisson(stim, spike_train, glm_weights, td, temporal_len, grid_size)
+function [neg_log_likelihood, dL] = neg_log_likli_poisson(stim, spike_train, glm_weights, td, temporal_len, grid_size, l1, l1_lambda)
 %LOG_LIKLI_POISSON computes log likelihood function with exponential non
 %linearity  
     %% compute log likelihood
@@ -74,6 +74,12 @@ function [neg_log_likelihood, dL] = neg_log_likli_poisson(stim, spike_train, glm
     end
     grad_norm = sprintf('gradient norm length: %0.3f', norm(dL));
     disp(grad_norm);
+    
+    if l1 && how == 1
+       [l1_loss, l1_grad] = l1_sparsity(glm_weights, temporal_len);
+       neg_log_likelihood = neg_log_likelihood + l1_lambda*l1_loss;
+       dL = dL + l1_lambda*l1_grad;
+    end
 end
 
 
