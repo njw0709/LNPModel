@@ -40,3 +40,17 @@ The project is structured the following way:
 |
 |- macro_make_report.m <- auto-creates figures that has the RFs with likelihood values from the fit results.
 ```
+
+** A step-by-step guide for understanding ```neg_log_likli_poisson.m``` and ```make_design_matrix.m``` can be found in *.pdf
+
+## Future Directions / Questions
+
+1. Data processing
+- Does doing random permutaion make sense?
+- Maybe concatenating multiple recordings will work better? (if we can account for the multiplier effect when recreating the stimulus)
+
+2. Optimization
+- How do you prevent overfitting?
+- Adding sparseness term to the neg-log-likelihood loss?
+- For on/off separable case, can you constrain each spatial rf to have only positive and negative values respectively?
+- 
