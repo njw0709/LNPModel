@@ -1,9 +1,11 @@
 classdef SpikeTimes
+    % Reads and parses the .txt file with timestamps of spikes.
+    % Timestamps are recorded in reference to the universal recording time.
     properties
         recording_name %name of the recording
         event_timing_file_path %file path of the event timing .txt file
         spike_t_vector %spike timing vector
-        t0 %when the recording started in universal time(?)
+        t0 %when the recording started in universal time
     end
     
     methods

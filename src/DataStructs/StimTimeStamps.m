@@ -1,11 +1,13 @@
 classdef StimTimeStamps
+    % Reads .crs file which contains the timestamps of the visual stimulus
+    % in the universal reference time.  
     properties
         recording_name %name of the recording.
         crs_file_path %path to .crs file for time synchronization b/w stim and response.
         timestamps %timing information on when each stimulus was shown w.r.t the overall experimental time.
-        templength
-        tempresolu
-        tempframes
+        templength %length of the recording in seconds
+        tempresolu %temporal resolution of the stimulus (delta time between two stims)
+        tempframes %total number of frames
     end
 
     methods

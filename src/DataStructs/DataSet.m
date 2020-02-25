@@ -1,6 +1,6 @@
 classdef DataSet
-    % Dataset data structure. It allows for easy joining of two datasets,
-    % as well as dividing the dataset into train and test sets.
+    % Dataset data structure. Makes joining of two datasets,
+    % as well as dividing the dataset into train and test sets easy.
     
     properties
         variable_mat % Design matrix with flattened stimulus concatenated as rows (dim: [num_stim, stim_length]) 

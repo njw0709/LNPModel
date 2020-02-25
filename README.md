@@ -45,12 +45,26 @@ The project is structured the following way:
 
 ## Future Directions / Questions
 
-1. Data processing
-- Does doing random permutaion make sense?
-- Maybe concatenating multiple recordings will work better? (if we can account for the multiplier effect when recreating the stimulus)
+1. Train/test data division
+
+There are things that can be done differently for dividing the train and test datasets:
+
+- Currently, the data gets randomly mixed before it gets divided into train / test datasets. Since there are multiple repetition of
+the same stimulus in a single sparse noise recording, we can turn off the random mixing and just cut-off the last repetition.
+This may prevent the overfitting problem we observe in the results.
+
+- Maybe concatenating multiple recordings will work better? We can turn one recording into the train set and another into the test set.
+We may need to account for the change in the size of the boxes (the multiplier values) when we are concatenating two recordings though.
 
 2. Optimization
-- How do you prevent overfitting?
-- Adding sparseness term to the neg-log-likelihood loss?
+
+- How do you prevent overfitting? We can test with methods mentioned above, or do some sort of early-termination if possible.
+
+- We can potentially add a sparseness term (L1 on the second derivative of the temporal rf, and just the values of the spatial rf)
+ in addition to the neg-log-likelihood loss. This is more complicated since we need to optimize how much weight is put on
+ the L1 term.
+
 - For on/off separable case, can you constrain each spatial rf to have only positive and negative values respectively?
-- 
+This can be done pretty easily using `fmincon` instead of `fminunc`, but optimization becomes extremely slow. However, observations on the 
+resulting on/off spatial rfs optimized with `fminunc` and on/off separated stimuli seem to suggest that 
+the on or off spatial rfs rarely have negative or positive values respectively.

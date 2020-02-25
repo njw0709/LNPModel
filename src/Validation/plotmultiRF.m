@@ -1,4 +1,5 @@
 function plotmultiRF()
+% Original receptive field plotting script
 
 close all;
 

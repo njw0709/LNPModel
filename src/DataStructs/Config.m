@@ -39,10 +39,6 @@ classdef Config
         end
         function config = build_config(config_file_path)
             run(config_file_path);
-
-            % Then if it is a sn stimulus we have:
-            % preterm posterm frmperterm  refreshrate
-
             arg = who;
             config = struct;
             for i = 1:length(arg)

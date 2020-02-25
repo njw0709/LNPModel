@@ -1,6 +1,10 @@
 function [neg_log_likelihood, dL] = neg_log_likli_poisson(stim, spike_train, glm_weights, td, temporal_len, grid_size)
-%LOG_LIKLI_POISSON computes log likelihood function with exponential non
-%linearity  
+%LOG_LIKLI_POISSON computes log likelihood of the spike train given the 
+%weights being optimized with glm. Uses exponential nonlinearity.
+%Handles three different cases: 1) time-space nonseparable, 2) time-space
+%separable, 3) time-space separable with two spatial rfs for on/off
+%respectively. Returns log likelihood as well as the gradient for each
+%parameters.
     %% compute log likelihood
     log_likelihood = 0;
     if size(glm_weights,1) == size(stim,2)
