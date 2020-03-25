@@ -1,12 +1,17 @@
-classdef Config   
+classdef Config
+    % imports the configs file (.m file) that has the information about the
+    % recording, especially the information on which .snf file to use to
+    % recreate the Sparse Noise Stimulus.
     properties
-        recording_name
-        config_file_path
-        config
+        recording_name %name of the recording extracted from the file
+        config_file_path %the path where the file lives
+        config % config info itself
     end
     
     methods
         function obj = Config(config_file_path)
+            % can interactively import file if the file path is not
+            % specified.
             if ~exist('config_file_path', 'var')
                 disp('Specified no files to import.');
                 [obj.recording_name, ...
@@ -15,7 +20,8 @@ classdef Config
                 [obj.recording_name, ...
                     obj.config_file_path] = Config.import_files(config_file_path);
             end
-            obj.config = Config.build_config(obj.config_file_path);
+            % loads the .m file and saves to a struct.
+            obj.config = Config.build_config(obj.config_file_path); 
         end
     end
      methods (Static)
@@ -33,10 +39,6 @@ classdef Config
         end
         function config = build_config(config_file_path)
             run(config_file_path);
-
-            % Then if it is a sn stimulus we have:
-            % preterm posterm frmperterm  refreshrate
-
             arg = who;
             config = struct;
             for i = 1:length(arg)

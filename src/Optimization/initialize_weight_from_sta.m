@@ -1,5 +1,8 @@
 function [weight] = initialize_weight_from_sta(sta,opt)
-%INITIALIZE_WEIGHT_FROM_STA initializes the weight from computed sta
+%INITIALIZE_WEIGHT_FROM_STA initializes the weight from spike triggered
+%average to be used as the first guess of the glm. If opt = 'separable', 
+%it creates weights with time-space separated, and returns an array with 
+%the two concatenated.
     if isequal(opt, 'separable')
         amplitudes = sum(abs(sta), [1,2]);
         [M,I] = max(amplitudes(:));

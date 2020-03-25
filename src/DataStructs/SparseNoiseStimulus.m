@@ -1,4 +1,7 @@
 classdef SparseNoiseStimulus
+    % Reads the configurations for the recording, and recreates the sparse
+    % noise stimulus. Configuration file must specify which .snf file to use
+    % when recreating the stimulus.
     properties
         snf_file_dir %.snf file contains information needed to reconstruct the pseudo-randomly generated sparse noise stim
         config %configurations read / computed from .m and .snf files

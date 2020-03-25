@@ -1,4 +1,10 @@
 function [spike_train, rf_spatial, rf_temporal] = simulate_neuron(Stim, rf_temporal_len)
+%SIMULATE_NEURON simulated neuron with custom-defined center-surround
+%spatial receptive field and biphasic temporal receptive field. Used
+%Rectified linear activation function for the non-linearity and a poisson
+%random function to produce the number of spikes. Used to validate the glm
+%code so that the fit results can be compared to the ground truth rfs which
+%we defined here.
     spatial_amplitude = 1.6;
     rf_spatial = spatial_amplitude.*center_surround(1.2, [6,7]);
     rf_spatiotemporal = repmat(rf_spatial,[1,1,rf_temporal_len]);
